@@ -212,11 +212,11 @@ end
 GRAPHICS-WINDOW
 0
 10
+928
 939
-950
 -1
 -1
-30.0323
+30.0
 1
 14
 1
@@ -468,7 +468,7 @@ INPUTBOX
 1775
 415
 Shape_string
-Polygon -1 true true [12 6 18 15 18 9 25 13 20 18 25 22 27 23 24 26 17 21 13 27 10 20 6 19 4 13 9 10 10 16 12 6]
+Polygon -1 true true [15 15 28 16 27 26 15 25 15 15]
 1
 0
 String
@@ -495,21 +495,79 @@ color_as_int
 0
 
 @#$#@#$#@
+# NetLogo Turtle Shape Editor
+
+
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+A _slightly_ more advanced tool for editing turtle shapes in NetLogo
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+Just press `Setup` then `Go`!
+
+Chose the shape with the `shapeType` chooser.
+
+Click to create and drag around to edit. Double click to delete verticies.
+
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Import the string from a `.nlogo` file and edit it here.
+
+Or create a new shape from scratch and export the string definition back into a `.nlogo` file.
+
+### `.nlogo` file structure
+
+See [here](https://github.com/NetLogo/NetLogo/wiki/File-(.nlogo)-and-Widget-Format) for details about the `.nlogo` file format and turtle shape syntax.
+
+A conforming model file contains __exactly 12__ sections, separated by `@#$#@#$#@` dividers.
+
+The individual sections vary in format.
+
+    Code tab
+    @#$#@#$#@
+    Interface tab   
+    @#$#@#$#@
+    Info tab
+    @#$#@#$#@
+    turtle shapes
+    @#$#@#$#@
+    NetLogo version
+    @#$#@#$#@
+    preview commands
+    @#$#@#$#@
+    System Dynamics Modeler
+    @#$#@#$#@
+    BehaviorSpace
+    @#$#@#$#@
+    HubNet client
+    @#$#@#$#@
+    link shapes
+    @#$#@#$#@
+    model settings
+    @#$#@#$#@
+    DeltaTick
+
+#### Turtle shapes
+
+Turtle shapes go here. If empty, netlogo provides with the default shapes. However, once you specify a shape, it includes them all.
+
+    name-of-shape
+    rotatable?
+    number-of-color (its order in the editor's chooser) that is changable in the shape
+
+Then, any number of component pieces of the shape, in a line-by-line format that's something like:
+
+    shape-type color-as-int some-bools some-numbers
+
+#### Link shapes
+
+Like turtle shapes, but for links.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+No grid snapping unlike the built in editor.
 
 ## THINGS TO TRY
 
@@ -517,19 +575,42 @@ color_as_int
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
-
-## NETLOGO FEATURES
-
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+Symmetry and rotation options
 
 ## RELATED MODELS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+Built off NetLogo's built in mouse examples
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+__Author: Austin Kong__
+
+[Find me on GitHub](https://github.com/austinstkong/NetLogo-Turtle-Shape-Editor)
+
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org>
 @#$#@#$#@
 default
 true
