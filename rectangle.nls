@@ -1,0 +1,4 @@
+breed [rectangles rectangle]
+
+to draw_rectangle
+end

@@ -1,4 +1,7 @@
-__includes ["polygon.nls" "select_multiple.nls"]
+__includes [
+  "polygon.nls" "rectangle.nls"
+  "parser.nls" "select_multiple.nls"
+]
 
 extensions [csv table]
 
@@ -90,70 +93,6 @@ to go
     reset-perspective
   ]
   display ; update the display as not using ticks
-end
-
-to parse_element [str]
-  set str (csv:from-row str " ")
-  carefully [
-    set color_as_int item 1 str
-  ] [
-    user-message (word "Invalid color_as_int: " (item 1 str) "\n\n" error-message)
-    stop
-  ]
-  ifelse is-boolean? item 2 str [
-    set filled? item 2 str
-  ] [
-    user-message word "Expected a boolean in position 2: " item 2 str
-    stop
-  ]
-  ifelse is-boolean? item 3 str [
-    set marked? item 3 str
-  ] [
-    user-message word "Expected a boolean in position 3: " item 3 str
-    stop
-  ]
-  (ifelse
-    not is-string? first str [
-      user-message word "Expected a string in position 0: " item 1 str
-      stop
-    ] first str = "Polygon" [
-      ;s"Polygon ${awtColor.getRGB} $filled $marked $pointsString"
-      set str sublist str 4 length str
-      if length str mod 2 != 0 [
-        user-message word "Expected even number of elements but got:" length str
-        stop
-      ]
-    ] first str = "Rectangle" [
-      ;s"Rectangle ${awtColor.getRGB} $filled $marked ${upperLeft.x} ${upperLeft.y} ${lowerRight.x} ${lowerRight.y}"
-      set str sublist str 4 length str
-      if length str != 4 [
-        user-message word "Expected [ULx ULy LRx LR y] but got:" str
-        stop
-      ]
-    ] first str = "Line" [
-      ;"Line " + awtColor.getRGB + " " + marked + " " + start.x + " " + start.y + " " + end.x + " " + end.y
-      if length str != 4 [
-        user-message word "Expected [xo yo x1 y1] but got:" str
-        stop
-      ]
-    ] first str = "Circle" [
-      ;"Circle " + awtColor.getRGB + " " + filled + " " + marked + " " + x + " " + y + " " + xDiameter
-      if length str != 3 [
-        user-message word "Expected [x y dia] but got:" str
-        stop
-      ]
-    ] [
-      user-message word "Invalid shape type: " first str
-      stop
-  ])
-  output-print str
-end
-
-to parse_shape [str]
-   ;   name,
-   ;   rotatable,
-   ;   editableColorIndex) ++
-   ;   elementList.filter(_.shouldSave).map(_.toString)).mkString("\n")
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -541,6 +480,8 @@ The individual sections vary in format.
     @#$#@#$#@
     DeltaTick
 
+See the [source code](https://github.com/NetLogo/NetLogo/blob/hexy/netlogo-core/src/main/fileformat/NLogoFormat.scala) for more details.
+
 #### Turtle shapes
 
 Turtle shapes go here. If empty, netlogo provides with the default shapes. However, once you specify a shape, it includes them all.
@@ -552,6 +493,8 @@ Turtle shapes go here. If empty, netlogo provides with the default shapes. Howev
 Then, any number of component pieces of the shape, in a line-by-line format that's something like:
 
     shape-type color-as-int some-bools some-numbers
+
+Exact format and syntax can be determined from [NetLogo' source code](https://github.com/NetLogo/NetLogo/tree/hexy/netlogo-core/src/main/shape). It is defined by the `toString` method for each of the respective classes. For the turtle shape, it is `VectorShape` and each element are named as such, ie `Circle`, `Line`, `Polygon` and `Rectangle`. These classes are provided by the package `org.nlogo.shape`
 
 #### Link shapes
 
