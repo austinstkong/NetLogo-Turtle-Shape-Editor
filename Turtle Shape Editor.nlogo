@@ -1,8 +1,8 @@
-__includes ["select_multiple.nls"]
+__includes ["polygon.nls" "select_multiple.nls"]
 
 extensions [csv table]
 
-breed [polygons polygon]
+
 
 globals [
   selected prev current selected_delta
@@ -159,131 +159,6 @@ to parse_shape [str]
    ;   rotatable,
    ;   editableColorIndex) ++
    ;   elementList.filter(_.shouldSave).map(_.toString)).mkString("\n")
-end
-
-to draw_polygon
-  ifelse selected = nobody  [
-    ; pick the polygon at the patch under your cursor
-    set selected one-of [turtles-here] of patch mouse-xcor mouse-ycor
-    if not any? polygons or (selected = nobody and prev != nobody and [count my-links < 2] of prev) [
-      ask patch mouse-xcor mouse-ycor [
-        sprout-polygons 1 [
-          set selected self
-          set shape "circle"
-          set label (word who ": " xcor " " ycor)
-          set color black
-        ]
-      ]
-    ]
-    if prev != nobody and selected != nobody [
-      ask selected [
-        ifelse out-link-to prev != nobody [
-          ask out-link-to prev [die]
-          ask prev [if not any? my-links [die]]
-        ] [
-          (ifelse not any? my-in-links and not any? [my-out-links] of prev and selected != prev [
-            create-link-from prev [
-              set color orange
-              set shape "default"
-            ]
-          ] not any? my-out-links and not any? [my-in-links] of prev and selected != prev [
-            create-link-to prev [
-              set color orange
-              set shape "default"
-            ]
-          ])
-        ]
-      ]
-      if selected != nobody [
-        watch selected
-        ask selected [set color sky]
-      ]
-    ]
-  ] [
-    ; if a turtle is selected, move it to the mouse, if no one else is here
-    ask selected [
-      let existing [one-of turtles-here] of patch mouse-xcor mouse-ycor
-      (ifelse existing = nobody [
-        move-to patch mouse-xcor mouse-ycor
-        set label (word who ": " xcor " " ycor)
-        set color sky
-      ] not any? my-out-links and [not any? my-in-links] of existing [
-        set color pink
-        ask existing [set color pink]
-      ] not any? my-in-links and [not any? my-out-links] of existing [
-        set color pink
-        ask existing [set color pink]
-      ])
-    ]
-  ]
-end
-
-to check_polygon
-
-  if prev != nobody [
-    if [color = pink] of prev [
-      ask other polygons with [color = pink] [
-        show who
-      ]
-    ]
-  ]
-
-  let vertices check_ring prev no-turtles
-  ifelse not empty? vertices [
-    set element_string string_polygon vertices
-  ] [
-    set element_string ""
-  ]
-end
-
-; Call with the starting polygon vertex and an empty turtle-set
-; Reports the list of verticies if a closed polygon is formed, otherwise empty list
-; The first and last points being the same
-; [x0 y0 x1 y1 ... xn yn x0 y0]
-to-report check_ring [me visited]
-  ;if me = nobody [report []]
-  ; Recursive terminator - got back to the start
-  if member? me visited [
-    report list ([xcor] of me) ([ycor] of me)
-  ]
-  let vertices []
-  if [any? in-link-neighbors] of me [
-    ask [one-of in-link-neighbors] of me [
-      set vertices check_ring self (turtle-set me visited)
-    ]
-    ask [one-of my-in-links] of me [
-      set color ifelse-value not empty? vertices [green] [red]
-      set shape ifelse-value not empty? vertices ["polygon closed"] ["polygon open"]
-    ]
-  ]
-  report ifelse-value not empty? vertices [(sentence vertices ([xcor] of me) ([ycor] of me))] [vertices]
-end
-
-to-report export_polygon
-  if any? polygons [
-    report string_polygon (check_ring (one-of polygons) no-turtles)
-  ]
-  report false
-end
-
-to-report string_polygon [vertices]
-  report (word "Polygon " color_as_int " " filled? " true " but-first but-last (word vertices))
-end
-
-to doubleClick_polygon
-  if prev != nobody [
-    let tmp nobody
-    ask prev [
-      (ifelse
-        count my-links <= 1 [
-          die
-        ] [shape = "polygon closed"] of one-of my-links [
-          set tmp one-of in-link-neighbors
-          die
-      ])
-    ]
-    if tmp != nobody [set tmp check_ring tmp no-turtles]
-  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
