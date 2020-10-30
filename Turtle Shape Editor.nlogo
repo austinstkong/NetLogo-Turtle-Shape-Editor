@@ -1,15 +1,17 @@
+__includes ["select_multiple.nls"]
 
 extensions [csv table]
 
 breed [polygons polygon]
 
 globals [
-  selected prev current
+  selected prev current selected_delta
   downTimer upTimer
   lastDownTime lastUpTime
   flagUp flagDown mouseIsDown
   clickCounter doubleClickCounter
   color_lookup
+  mode
 ]
 
 to startup
@@ -45,6 +47,11 @@ to setup
 end
 
 to go
+  if mode != elementType [
+    set mode elementType
+    set selected nobody
+    set prev nobody
+  ]
   ifelse mouse-down? [
     if timer >= upTimer [
       ; Only do these actions once on the click
@@ -195,7 +202,7 @@ to draw_polygon
   ] [
     ; if a turtle is selected, move it to the mouse, if no one else is here
     ask selected [
-      let existing [one-of polygons-here] of patch mouse-xcor mouse-ycor
+      let existing [one-of turtles-here] of patch mouse-xcor mouse-ycor
       (ifelse existing = nobody [
         move-to patch mouse-xcor mouse-ycor
         set label (word who ": " xcor " " ycor)
@@ -282,8 +289,8 @@ end
 GRAPHICS-WINDOW
 0
 10
-928
-939
+938
+949
 -1
 -1
 30.0
@@ -307,9 +314,9 @@ ticks
 30.0
 
 BUTTON
-930
+950
 10
-994
+1014
 43
 Setup
 setup
@@ -324,9 +331,9 @@ NIL
 1
 
 BUTTON
-930
+950
 45
-993
+1013
 78
 NIL
 go
@@ -341,9 +348,9 @@ NIL
 1
 
 MONITOR
-995
+1125
 55
-1075
+1205
 100
 NIL
 selected
@@ -352,9 +359,9 @@ selected
 11
 
 MONITOR
-1075
+1205
 10
-1155
+1285
 55
 NIL
 mouse-down?
@@ -363,31 +370,31 @@ mouse-down?
 11
 
 MONITOR
-1155
+1285
 10
-1230
+1360
 55
 NIL
 mouse-xcor
-0
+1
 1
 11
 
 MONITOR
-1230
+1360
 10
-1305
+1435
 55
 NIL
 mouse-ycor
-0
+1
 1
 11
 
 MONITOR
-995
+1125
 10
-1075
+1205
 55
 Under mouse
 one-of [turtles-here] of patch mouse-xcor mouse-ycor
@@ -396,9 +403,9 @@ one-of [turtles-here] of patch mouse-xcor mouse-ycor
 11
 
 MONITOR
-1075
+1205
 55
-1155
+1285
 100
 NIL
 prev
@@ -407,9 +414,9 @@ prev
 11
 
 MONITOR
-1480
+1610
 10
-1560
+1690
 55
 NIL
 downTimer
@@ -418,9 +425,9 @@ downTimer
 11
 
 MONITOR
-1480
+1610
 55
-1560
+1690
 100
 NIL
 lastDownTime
@@ -429,9 +436,9 @@ lastDownTime
 11
 
 MONITOR
-1560
+1690
 10
-1640
+1770
 55
 NIL
 upTimer
@@ -447,9 +454,9 @@ OUTPUT
 11
 
 MONITOR
-1560
+1690
 55
-1640
+1770
 100
 NIL
 lastUpTime
@@ -458,9 +465,9 @@ lastUpTime
 11
 
 MONITOR
-1305
+1435
 10
-1375
+1505
 55
 NIL
 clickCounter
@@ -469,9 +476,9 @@ clickCounter
 11
 
 MONITOR
-1375
+1505
 10
-1480
+1610
 55
 NIL
 doubleClickCounter
@@ -480,9 +487,9 @@ doubleClickCounter
 11
 
 SLIDER
-1305
+1435
 55
-1480
+1610
 88
 doubleClickDelay
 doubleClickDelay
@@ -495,10 +502,10 @@ s
 HORIZONTAL
 
 CHOOSER
-935
-105
-1073
-150
+950
+125
+1088
+170
 elementType
 elementType
 "Polygon" "Line" "Rectangle" "Circle"
@@ -527,16 +534,16 @@ INPUTBOX
 1775
 415
 element_string
-Polygon -2 1 1 26 21 26 7 11 17 26 21
+NIL
 1
 0
 String
 
 SWITCH
-935
-195
-1038
-228
+950
+215
+1053
+248
 filled?
 filled?
 0
@@ -544,10 +551,10 @@ filled?
 -1000
 
 CHOOSER
-935
-150
-1073
-195
+950
+170
+1088
+215
 color_as_int
 color_as_int
 -1 -2
@@ -571,9 +578,9 @@ NIL
 1
 
 INPUTBOX
-1075
+1095
 155
-1140
+1160
 215
 col
 55.0
@@ -582,15 +589,32 @@ col
 Color
 
 SWITCH
-935
-230
-1038
-263
+950
+250
+1053
+283
 marked?
 marked?
 1
 1
 -1000
+
+BUTTON
+950
+80
+1040
+113
+NIL
+select_multiple
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 # NetLogo Turtle Shape Editor
