@@ -1,3 +1,6 @@
+
+extensions [csv table]
+
 breed [polygons polygon]
 
 globals [
@@ -6,6 +9,7 @@ globals [
   lastDownTime lastUpTime
   flagUp flagDown mouseIsDown
   clickCounter doubleClickCounter
+  color_lookup
 ]
 
 to startup
@@ -24,6 +28,8 @@ to setup
   set mouseIsDown mouse-down?
   set clickCounter 0
   set doubleClickCounter 0
+
+  set color_lookup table:make
 
   let stepSize 1
 
@@ -50,7 +56,7 @@ to go
       set downTimer timer
     ]
     ; if the mouse is down then handle selecting and dragging
-    run word "draw_" shapeType
+    run word "draw_" elementType
   ] [
     if timer >= downTimer [
       ; Only do these actions once on release
@@ -66,14 +72,14 @@ to go
         ask turtles [set color black]
         if prev != nobody [
           ask prev [set color blue]
-          run word "check_" shapeType
+          run word "check_" elementType
         ]
 
         ; Detect a double click
         if lastUpTime < doubleClickDelay [
           set doubleClickCounter doubleClickCounter + 1
           ; clears the last selected turtle
-          run word "doubleClick_" shapeType
+          run word "doubleClick_" elementType
           set prev nobody
         ]
       ]
@@ -82,6 +88,70 @@ to go
     reset-perspective
   ]
   display ; update the display as not using ticks
+end
+
+to parse_element [str]
+  set str (csv:from-row str " ")
+  carefully [
+    set color_as_int item 1 str
+  ] [
+    user-message (word "Invalid color_as_int: " (item 1 str) "\n\n" error-message)
+    stop
+  ]
+  ifelse is-boolean? item 2 str [
+    set filled? item 2 str
+  ] [
+    user-message word "Expected a boolean in position 2: " item 2 str
+    stop
+  ]
+  ifelse is-boolean? item 3 str [
+    set marked? item 3 str
+  ] [
+    user-message word "Expected a boolean in position 3: " item 3 str
+    stop
+  ]
+  (ifelse
+    not is-string? first str [
+      user-message word "Expected a string in position 0: " item 1 str
+      stop
+    ] first str = "Polygon" [
+      ;s"Polygon ${awtColor.getRGB} $filled $marked $pointsString"
+      set str sublist str 4 length str
+      if length str mod 2 != 0 [
+        user-message word "Expected even number of elements but got:" length str
+        stop
+      ]
+    ] first str = "Rectangle" [
+      ;s"Rectangle ${awtColor.getRGB} $filled $marked ${upperLeft.x} ${upperLeft.y} ${lowerRight.x} ${lowerRight.y}"
+      set str sublist str 4 length str
+      if length str != 4 [
+        user-message word "Expected [ULx ULy LRx LR y] but got:" str
+        stop
+      ]
+    ] first str = "Line" [
+      ;"Line " + awtColor.getRGB + " " + marked + " " + start.x + " " + start.y + " " + end.x + " " + end.y
+      if length str != 4 [
+        user-message word "Expected [xo yo x1 y1] but got:" str
+        stop
+      ]
+    ] first str = "Circle" [
+      ;"Circle " + awtColor.getRGB + " " + filled + " " + marked + " " + x + " " + y + " " + xDiameter
+      if length str != 3 [
+        user-message word "Expected [x y dia] but got:" str
+        stop
+      ]
+    ] [
+      user-message word "Invalid shape type: " first str
+      stop
+  ])
+  output-print str
+end
+
+to parse_shape [str]
+   ;   name,
+   ;   rotatable,
+   ;   editableColorIndex) ++
+   ;   elementList.filter(_.shouldSave).map(_.toString)).mkString("\n")
 end
 
 to draw_polygon
@@ -153,9 +223,9 @@ to check_polygon
 
   let vertices check_ring prev no-turtles
   ifelse not empty? vertices [
-    set shape_string string_polygon vertices
+    set element_string string_polygon vertices
   ] [
-    set shape_string ""
+    set element_string ""
   ]
 end
 
@@ -190,7 +260,7 @@ to-report export_polygon
 end
 
 to-report string_polygon [vertices]
-  report (word "Polygon " color_as_int " " filled? " true " vertices)
+  report (word "Polygon " color_as_int " " filled? " true " but-first but-last (word vertices))
 end
 
 to doubleClick_polygon
@@ -237,9 +307,9 @@ ticks
 30.0
 
 BUTTON
-970
+930
 10
-1034
+994
 43
 Setup
 setup
@@ -254,9 +324,9 @@ NIL
 1
 
 BUTTON
-970
+930
 45
-1033
+993
 78
 NIL
 go
@@ -271,10 +341,10 @@ NIL
 1
 
 MONITOR
-1010
-250
-1090
-295
+995
+55
+1075
+100
 NIL
 selected
 17
@@ -282,9 +352,9 @@ selected
 11
 
 MONITOR
-1065
+1075
 10
-1145
+1155
 55
 NIL
 mouse-down?
@@ -293,9 +363,9 @@ mouse-down?
 11
 
 MONITOR
-1145
+1155
 10
-1220
+1230
 55
 NIL
 mouse-xcor
@@ -304,9 +374,9 @@ mouse-xcor
 11
 
 MONITOR
-1220
+1230
 10
-1295
+1305
 55
 NIL
 mouse-ycor
@@ -315,10 +385,10 @@ mouse-ycor
 11
 
 MONITOR
-1010
-205
-1090
-250
+995
+10
+1075
+55
 Under mouse
 one-of [turtles-here] of patch mouse-xcor mouse-ycor
 17
@@ -326,10 +396,10 @@ one-of [turtles-here] of patch mouse-xcor mouse-ycor
 11
 
 MONITOR
-1010
-295
-1090
-340
+1075
+55
+1155
+100
 NIL
 prev
 17
@@ -337,10 +407,10 @@ prev
 11
 
 MONITOR
-1360
-105
-1440
-150
+1480
+10
+1560
+55
 NIL
 downTimer
 2
@@ -348,21 +418,10 @@ downTimer
 11
 
 MONITOR
-1360
-60
-1520
-105
-NIL
-timer
-17
-1
-11
-
-MONITOR
-1360
-150
-1440
-195
+1480
+55
+1560
+100
 NIL
 lastDownTime
 2
@@ -370,10 +429,10 @@ lastDownTime
 11
 
 MONITOR
-1440
-105
-1520
-150
+1560
+10
+1640
+55
 NIL
 upTimer
 2
@@ -388,10 +447,10 @@ OUTPUT
 11
 
 MONITOR
-1440
-150
-1520
-195
+1560
+55
+1640
+100
 NIL
 lastUpTime
 3
@@ -399,10 +458,10 @@ lastUpTime
 11
 
 MONITOR
-1370
-225
-1447
-270
+1305
+10
+1375
+55
 NIL
 clickCounter
 17
@@ -410,10 +469,10 @@ clickCounter
 11
 
 MONITOR
-1490
-225
-1607
-270
+1375
+10
+1480
+55
 NIL
 doubleClickCounter
 17
@@ -421,10 +480,10 @@ doubleClickCounter
 11
 
 SLIDER
-1615
-165
-1787
-198
+1305
+55
+1480
+88
 doubleClickDelay
 doubleClickDelay
 0
@@ -436,22 +495,22 @@ s
 HORIZONTAL
 
 CHOOSER
-965
-100
-1103
-145
-shapeType
-shapeType
-"polygon"
+935
+105
+1073
+150
+elementType
+elementType
+"Polygon" "Line" "Rectangle" "Circle"
 0
 
 BUTTON
-1145
-325
-1247
-358
-Export Shape
-set shape_string runresult word \"export_\" shapeType
+950
+320
+1055
+353
+Export Element
+set element_string runresult word \"export_\" elementType
 NIL
 1
 T
@@ -467,17 +526,17 @@ INPUTBOX
 355
 1775
 415
-Shape_string
-Polygon -1 true true [15 15 28 16 27 26 15 25 15 15]
+element_string
+Polygon -2 1 1 26 21 26 7 11 17 26 21
 1
 0
 String
 
 SWITCH
-965
-145
-1068
-178
+935
+195
+1038
+228
 filled?
 filled?
 0
@@ -485,14 +544,53 @@ filled?
 -1000
 
 CHOOSER
-1130
-110
-1268
-155
+935
+150
+1073
+195
 color_as_int
 color_as_int
 -1 -2
+1
+
+BUTTON
+950
+285
+1055
+318
+Draw Element
+parse_element element_string
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+INPUTBOX
+1075
+155
+1140
+215
+col
+55.0
+1
 0
+Color
+
+SWITCH
+935
+230
+1038
+263
+marked?
+marked?
+1
+1
+-1000
 
 @#$#@#$#@
 # NetLogo Turtle Shape Editor
