@@ -2,31 +2,26 @@ __includes ["polygon.nls" "select_multiple.nls"]
 
 extensions [csv table]
 
-
-
 globals [
-  selected prev current selected_delta
+  selected prev
   downTimer upTimer
   lastDownTime lastUpTime
-  flagUp flagDown mouseIsDown
+  mouseIsDown
   clickCounter doubleClickCounter
   color_lookup
   mode
 ]
 
+; Automatically runs when the model is opened
 to startup
   setup
-
 end
 
 to setup
   clear-all
   reset-timer
   set selected nobody
-  set current nobody
   set prev nobody
-  set flagDown mouse-down?
-  set flagUp not flagDown
   set mouseIsDown mouse-down?
   set clickCounter 0
   set doubleClickCounter 0

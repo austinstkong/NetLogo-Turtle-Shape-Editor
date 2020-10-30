@@ -9,6 +9,8 @@ globals [
   select-y
   drag-x        ; coordinates for the start of a drag operation
   drag-y
+  selected_delta ; Movements is relative to the corner of the selection box
+                 ; needed so the selection box can move beyong world boundaries
 ]
 
 to setup_select_multiple
