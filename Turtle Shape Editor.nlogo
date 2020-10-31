@@ -93,7 +93,7 @@ to go
     reset-perspective
   ]
   ask rectangles [
-    set label (word who ":"xcor ","ycor ":" v0 v1 v2 v3)
+    set label (word who ":"xcor ","ycor)
   ]
   display ; update the display as not using ticks
 end
@@ -346,7 +346,7 @@ INPUTBOX
 1775
 415
 element_string
-Polygon -2 true true 13 26 6 19 20 14 13 26
+Rectangle -2 true false 17 19 28 14
 1
 0
 String

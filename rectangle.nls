@@ -27,49 +27,8 @@ to draw_rectangle
           ;ask link-with prev [die]
           ;ask prev [die]
         ] [
-          if [not any? my-links] of prev and selected != prev [
-            ;create-link-with prev [
-            ;  set color orange
-            ;  set shape "default"
-            ;]
-            
-            ; selected aka v2
-            set v0 prev 
-            set v2 self
-            
-            ask prev [  ; v0
-              set v2 selected
-            ]
-            
-            hatch-rectangles 1 [ ; v1
-              set shape "circle"
-              set color black
-              set v0 prev
-              set v1 self
-              set v2 selected
-              set v3 nobody
-              setxy [xcor] of selected [ycor] of prev
-              ask v0 [set v1 myself create-link-with myself ]
-              ask v2 [set v1 myself create-link-with myself]
-            ]
-            
-            hatch-rectangles 1 [ ; v3
-              set shape "circle"
-              set color black
-              set v0 prev
-              set v1 [v1] of myself
-              set v2 selected
-              set v3 self
-              setxy [xcor] of prev [ycor] of selected
-              ask v0 [set v3 myself create-link-with myself]
-              ask v1 [set v3 myself]
-              ask v2 [set v3 myself create-link-with myself]
-            ]
-            
-            let r_l min list xcor [xcor] of prev
-            let r_r max list xcor [xcor] of prev
-            let r_t max list ycor [ycor] of prev
-            let r_b min list ycor [ycor] of prev
+          if [not any? my-links] of prev and selected != prev [  
+            create_rectangle_rest prev
           ]
         ]
       ]
@@ -98,6 +57,63 @@ to draw_rectangle
   ]
 end
 
+; Observer
+to create_rectangle [xleft ytop xright ybottom]
+  let v0_ nobody
+  create-rectangles 1 [ ; v0
+    set shape "circle"
+    set color black
+    set v0 self
+    set v1 nobody
+    set v2 nobody
+    set v3 nobody
+    setxy xleft ytop
+    set v0_ v0
+  ]
+  create-rectangles 1 [ ;v2
+    set shape "circle"
+    set color black
+    setxy xright ybottom
+    create_rectangle_rest v0_
+  ]
+end
+
+; Called fromw within v2
+to create_rectangle_rest [v0_]
+  ; selected aka v2
+  set v0 v0_ 
+  set v2 self
+  
+  ask v0_ [  ; v0
+    set v2 myself
+  ]
+  
+  hatch-rectangles 1 [ ; v1
+    set shape "circle"
+    set color black
+    set v0 v0_
+    set v1 self
+    set v2 myself
+    set v3 nobody
+    setxy [xcor] of v2 [ycor] of v0
+    ask v0 [set v1 myself create-link-with myself ]
+    ask v2 [set v1 myself create-link-with myself]
+  ]
+  
+  hatch-rectangles 1 [ ; v3
+    set shape "circle"
+    set color black
+    set v0 v0_
+    set v1 [v1] of myself
+    set v2 myself
+    set v3 self
+    setxy [xcor] of v0 [ycor] of v2
+    ask v0 [set v3 myself create-link-with myself]
+    ask v1 [set v3 myself]
+    ask v2 [set v3 myself create-link-with myself]
+  ]
+end
+
 to-report canMoveRectangle?
   if [any? rectangles-here] of patch mouse-xcor mouse-ycor [report false]
   let flag true
@@ -113,6 +129,18 @@ to-report canMoveRectangle?
 end
 
 to check_rectangle
+  if prev != nobody [
+    ask prev [
+      let verticies (turtle-set v0 v1 v2 v3)
+      if all? verticies [is-turtle? self] [
+        set element_string string_rectangle ([xcor] of min-one-of verticies [xcor]) ([ycor] of max-one-of verticies [ycor]) ([xcor] of max-one-of verticies [xcor]) ([ycor] of min-one-of verticies [ycor])
+      ] 
+    ]
+  ]
+end
+
+to-report string_rectangle [xleft ytop xright ybottom]
+  report (word "Rectangle " color_as_int " " filled? " " marked? " " xleft " " ytop " " xright " " ybottom)
 end
 
 to doubleClick_rectangle
