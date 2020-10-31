@@ -81,7 +81,7 @@ to draw_rectangle
   ] [
     ; if a turtle is selected, move it to the mouse, if no one else is there
     ask selected [
-      if [not any? rectangles-here] of patch mouse-xcor mouse-ycor [
+      if canMoveRectangle? [
         ask link-neighbors [
           if xcor = [xcor] of myself [
             set xcor round mouse-xcor
@@ -96,6 +96,20 @@ to draw_rectangle
       ]
     ]
   ]
+end
+
+to-report canMoveRectangle?
+  if [any? rectangles-here] of patch mouse-xcor mouse-ycor [report false]
+  let flag true
+  ask link-neighbors [
+    if xcor = [xcor] of myself [
+      if any? [rectangles-here] of patch mouse-xcor ycor [set flag false]
+    ]
+    if ycor = [ycor] of myself [
+      if any? [rectangles-here] of patch xcor mouse-ycor [set flag false]
+    ]
+  ]
+  report flag
 end
 
 to check_rectangle
