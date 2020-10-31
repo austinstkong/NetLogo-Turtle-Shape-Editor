@@ -1,6 +1,6 @@
 breed [sides side]     ; the four sides of the selection rectangle
 
-sides-own [xt yt]
+sides-own [xt yt pos]
 
 globals [
   ;selected ; inherited
@@ -11,14 +11,28 @@ globals [
   drag-y
   selected_delta ; Movements is relative to the corner of the selection box
                  ; needed so the selection box can move beyong world boundaries
+  sideLeft sideRight sideTop sideBottom
+  xmin xmax ymin ymax
 ]
 
 to setup_select_multiple
-  set mode "none"
   set current-state "not-started"
   set-default-shape sides "line"
   set selected_delta table:make
   set selected no-turtles
+  let pos_list ["left" "top" "right" "bottom"]
+  if not any? sides [
+    create-sides 4 [
+      hide-turtle
+      set color gray
+      set pos first pos_list
+      set pos_list but-first pos_list
+      set heading ifelse-value member? pos "leftright" [0] [90]
+      run (word "set side" pos " self")
+      set xt xcor
+      set yt ycor
+    ]
+  ]
 end
 
 to select_multiple
@@ -46,6 +60,7 @@ to start-selecting
 end
 
 to handle-selecting
+  show "handle-selecting"
   ifelse mouse-down? [
     ; we keep updating the selection box as long as the mouse is down
     select select-x select-y round mouse-xcor round mouse-ycor
@@ -134,48 +149,53 @@ to-report nyc [yc]
 end
 
 to deselect
-  ask sides [ die ]
+  ask sides [ hide-turtle ]
   ask selected [ set color black ]
   set selected no-turtles
   table:clear selected_delta
 end
 
 to select [x1 y1 x2 y2] ; x1 y1 is initial corner and x2 y2 is current corner
-  deselect ; kill old selection rectangle
-  make-side x1 y1 x2 y1
-  make-side x1 y1 x1 y2
-  make-side x1 y2 x2 y2
-  make-side x2 y1 x2 y2
+  deselect ; hide old selection rectangle
+  ; for each side, one thin line shape is created at the mid point of each segment
+  ; of the bounding box and scaled to the proper length
+  set xmin min list x1 x2  ; smallest xcor is where the left side is
+  set xmax max list x1 x2  ; largest xcor is where the right side is
+  set ymin min list y1 y2  ; largest ycor is where the top is
+  set ymax max list y1 y2  ; smallest ycor is where the bottom is
+  ask sideLeft [
+    setxy xmin ((y1 + y2) / 2)
+    set size ymax - ymin
+  ]
+  ask sideRight [
+    setxy xmax ((y1 + y2) / 2)
+    set size ymax - ymin
+  ]
+  ask sideBottom [
+    setxy ((x1 + x2) / 2) ymin
+    set size xmax - xmin
+  ]
+  ask sideTop [
+    setxy ((x1 + x2) / 2) ymax
+    set size xmax - xmin
+  ]
+  ask sides [
+    set xt xcor
+    set yt ycor
+    show-turtle
+  ]
   set selected turtles with [breed != sides and selected? xcor ycor]
   ask selected [
     set color red
-    table:put selected_delta who list (min list x1 x2 - xcor) (min list y1 y2 - ycor)
+    table:put selected_delta who list (xmin - xcor) (ymin - ycor)
   ]
   show selected_delta
-end
-
-to make-side [x1 y1 x2 y2]
-  ; for each side, one thin line shape is created at the mid point of each segment
-  ; of the bounding box and scaled to the proper length
-  create-sides 1 [
-    set color gray
-    setxy (x1 + x2) / 2
-          (y1 + y2) / 2
-    facexy x1 y1
-    set xt xcor
-    set yt ycor
-    set size 2 * distancexy x1 y1
-  ]
 end
 
 ; helper procedure that determines whether a point is
 ; inside the selection rectangle
 to-report selected? [x y]
-  let y-max max [ycor] of sides  ; largest ycor is where the top is
-  let y-min min [ycor] of sides  ; smallest ycor is where the bottom is
-  let x-max max [xcor] of sides  ; largest xcor is where the right side is
-  let x-min min [xcor] of sides  ; smallest xcor is where the left side is
   ; report whether the input coordinates are within the rectangle
-  report x >= x-min and x <= x-max and
-         y >= y-min and y <= y-max
+  report x >= xmin and x <= xmax and
+         y >= ymin and y <= ymax
 end

@@ -157,9 +157,9 @@ NIL
 1
 
 MONITOR
-1125
+1135
 55
-1205
+1215
 100
 NIL
 selected
@@ -168,9 +168,9 @@ selected
 11
 
 MONITOR
-1205
+1215
 10
-1285
+1295
 55
 NIL
 mouse-down?
@@ -179,9 +179,9 @@ mouse-down?
 11
 
 MONITOR
-1285
+1295
 10
-1360
+1370
 55
 NIL
 mouse-xcor
@@ -190,9 +190,9 @@ mouse-xcor
 11
 
 MONITOR
-1360
+1370
 10
-1435
+1445
 55
 NIL
 mouse-ycor
@@ -201,9 +201,9 @@ mouse-ycor
 11
 
 MONITOR
-1125
+1135
 10
-1205
+1215
 55
 Under mouse
 one-of [turtles-here] of patch mouse-xcor mouse-ycor
@@ -212,9 +212,9 @@ one-of [turtles-here] of patch mouse-xcor mouse-ycor
 11
 
 MONITOR
-1205
+1215
 55
-1285
+1295
 100
 NIL
 prev
@@ -223,9 +223,9 @@ prev
 11
 
 MONITOR
-1610
+1620
 10
-1690
+1700
 55
 NIL
 downTimer
@@ -234,9 +234,9 @@ downTimer
 11
 
 MONITOR
-1610
+1620
 55
-1690
+1700
 100
 NIL
 lastDownTime
@@ -245,9 +245,9 @@ lastDownTime
 11
 
 MONITOR
-1690
+1700
 10
-1770
+1780
 55
 NIL
 upTimer
@@ -263,9 +263,9 @@ OUTPUT
 11
 
 MONITOR
-1690
+1700
 55
-1770
+1780
 100
 NIL
 lastUpTime
@@ -274,9 +274,9 @@ lastUpTime
 11
 
 MONITOR
-1435
+1445
 10
-1505
+1515
 55
 NIL
 clickCounter
@@ -285,9 +285,9 @@ clickCounter
 11
 
 MONITOR
-1505
+1515
 10
-1610
+1620
 55
 NIL
 doubleClickCounter
@@ -296,9 +296,9 @@ doubleClickCounter
 11
 
 SLIDER
-1435
+1445
 55
-1610
+1620
 88
 doubleClickDelay
 doubleClickDelay
@@ -343,7 +343,7 @@ INPUTBOX
 1775
 415
 element_string
-NIL
+Polygon -2 true true 21 26 10 24 10 14 26 21 21 26
 1
 0
 String
@@ -424,6 +424,28 @@ NIL
 NIL
 NIL
 1
+
+MONITOR
+1045
+10
+1135
+55
+NIL
+mode
+17
+1
+11
+
+MONITOR
+1045
+55
+1135
+100
+NIL
+current-state
+17
+1
+11
 
 @#$#@#$#@
 # NetLogo Turtle Shape Editor
