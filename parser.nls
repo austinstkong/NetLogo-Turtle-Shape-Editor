@@ -2,57 +2,73 @@
 ; Refer to the toString method of each element class
 to parse_element [str]
   set str (csv:from-row str " ")
+  let elementType_ first str
   carefully [
     set color_as_int item 1 str
   ] [
     user-message (word "Invalid color_as_int: " (item 1 str) "\n\n" error-message)
     stop
   ]
-  ifelse is-boolean? item 2 str [
-    set filled? item 2 str
-  ] [
-    user-message word "Expected a boolean in position 2: " item 2 str
-    stop
-  ]
-  ifelse is-boolean? item 3 str [
-    set marked? item 3 str
-  ] [
-    user-message word "Expected a boolean in position 3: " item 3 str
-    stop
-  ]
   (ifelse
-    not is-string? first str [
+    not is-string? elementType_ [
       user-message word "Expected a string in position 0: " item 1 str
       stop
-    ] first str = "Polygon" [
-      ;s"Polygon ${awtColor.getRGB} $filled $marked $pointsString"
-      set str sublist str 4 length str
-      if length str mod 2 != 0 [
-        user-message word "Expected even number of elements but got:" length str
+    ] elementType_ = "Line" [
+      if not is-boolean? item 2 str [
+        user-message word "Line: Expected a boolean for marked? in position 2: " item 2 str
         stop
       ]
-    ] first str = "Rectangle" [
-      ;s"Rectangle ${awtColor.getRGB} $filled $marked ${upperLeft.x} ${upperLeft.y} ${lowerRight.x} ${lowerRight.y}"
-      set str sublist str 4 length str
-      if length str != 4 [
-        user-message word "Expected [ULx ULy LRx LR y] but got:" str
+      set filled? item 2 str
+      set str sublist str 3 length str
+      if not isNumList? str [
+        user-message word "Line: Expected a list of numbers but got: " str
         stop
       ]
-    ] first str = "Line" [
       ;"Line " + awtColor.getRGB + " " + marked + " " + start.x + " " + start.y + " " + end.x + " " + end.y
       if length str != 4 [
-        user-message word "Expected [xo yo x1 y1] but got:" str
-        stop
-      ]
-    ] first str = "Circle" [
-      ;"Circle " + awtColor.getRGB + " " + filled + " " + marked + " " + x + " " + y + " " + xDiameter
-      if length str != 3 [
-        user-message word "Expected [x y dia] but got:" str
+        user-message word "Line: Expected [x0 y0 x1 y1] but got: " str
         stop
       ]
     ] [
-      user-message word "Invalid shape type: " first str
-      stop
+      if not is-boolean? item 2 str [
+        user-message word "Expected a boolean for filled? in position 2: " item 2 str
+        stop
+      ]
+      set filled? item 2 str
+      if not is-boolean? item 3 str [
+        user-message word "Expected a boolean for marked? in position 3: " item 3 str
+        stop
+      ]
+      set marked? item 3 str
+      set str sublist str 4 length str
+      if not isNumList? str [
+        user-message word "Expected a list of numbers but got: " str
+        stop
+      ]
+      (ifelse
+        elementType_ = "Polygon" [
+          ;s"Polygon ${awtColor.getRGB} $filled $marked $pointsString"
+          if length str mod 2 != 0 [
+            user-message word "Polygon: Expected an even number of elements but got: " length str
+            stop
+          ]
+          ;drawStringPolygon str
+        ] elementType_ = "Rectangle" [
+          ;s"Rectangle ${awtColor.getRGB} $filled $marked ${upperLeft.x} ${upperLeft.y} ${lowerRight.x} ${lowerRight.y}"
+          if length str != 4 [
+            user-message word "Rectangle: Expected [xleft ytop xright ybottom] but got: " str
+            stop
+          ]
+        ] elementType_ = "Circle" [
+          ;"Circle " + awtColor.getRGB + " " + filled + " " + marked + " " + x + " " + y + " " + xDiameter
+          if length str != 3 [
+            user-message word "Circle: Expected [x y dia] but got: " str
+            stop
+          ]
+        ] [
+          user-message word "Invalid shape type: " first str
+          stop
+      ])
   ])
   output-print str
 end
@@ -64,4 +80,14 @@ to parse_shape [str]
    ;   rotatable,
    ;   editableColorIndex) ++
    ;   elementList.filter(_.shouldSave).map(_.toString)).mkString("\n")
+end
+
+; Reports if the a list contains only numbers
+to-report isNumList? [lst]
+  foreach lst [i ->
+    if not is-number? i [
+      report false
+    ]
+  ]
+  report true
 end
