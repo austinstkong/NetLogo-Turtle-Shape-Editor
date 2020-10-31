@@ -1,4 +1,115 @@
 breed [rectangles rectangle]
 
+rectangles-own [
+  v0 v1 v2 v3
+]
+
 to draw_rectangle
+  ifelse selected = nobody  [
+    ; pick the polygon at the patch under your cursor
+    set selected one-of [turtles-here] of patch mouse-xcor mouse-ycor
+    if not any? rectangles or (selected = nobody and prev != nobody) [
+      ask patch mouse-xcor mouse-ycor [
+        sprout-rectangles 1 [
+          set selected self
+          set shape "circle"
+          set color black
+          set v0 self
+          set v1 nobody
+          set v2 nobody
+          set v3 nobody
+        ]
+      ]
+    ]
+    if prev != nobody and selected != nobody [
+      ask selected [
+        ifelse link-with prev != nobody [
+          ;ask link-with prev [die]
+          ;ask prev [die]
+        ] [
+          if [not any? my-links] of prev and selected != prev [
+            ;create-link-with prev [
+            ;  set color orange
+            ;  set shape "default"
+            ;]
+            
+            ; selected aka v2
+            set v0 prev 
+            set v2 self
+            
+            ask prev [  ; v0
+              set v2 selected
+            ]
+            
+            hatch-rectangles 1 [ ; v1
+              set shape "circle"
+              set color black
+              set v0 prev
+              set v1 self
+              set v2 selected
+              set v3 nobody
+              setxy [xcor] of selected [ycor] of prev
+              ask v0 [set v1 myself create-link-with myself ]
+              ask v2 [set v1 myself create-link-with myself]
+            ]
+            
+            hatch-rectangles 1 [ ; v3
+              set shape "circle"
+              set color black
+              set v0 prev
+              set v1 [v1] of myself
+              set v2 selected
+              set v3 self
+              setxy [xcor] of prev [ycor] of selected
+              ask v0 [set v3 myself create-link-with myself]
+              ask v1 [set v3 myself]
+              ask v2 [set v3 myself create-link-with myself]
+            ]
+            
+            let r_l min list xcor [xcor] of prev
+            let r_r max list xcor [xcor] of prev
+            let r_t max list ycor [ycor] of prev
+            let r_b min list ycor [ycor] of prev
+          ]
+        ]
+      ]
+      if selected != nobody [
+        watch selected
+        ask selected [set color sky]
+      ]
+    ]
+  ] [
+    ; if a turtle is selected, move it to the mouse, if no one else is there
+    ask selected [
+      if [not any? rectangles-here] of patch mouse-xcor mouse-ycor [
+        ask link-neighbors [
+          if xcor = [xcor] of myself [
+            set xcor round mouse-xcor
+          ]
+          if ycor = [ycor] of myself [
+            set ycor round mouse-ycor
+          ]
+        ]
+        move-to patch mouse-xcor mouse-ycor
+        set label (word who ": " xcor " " ycor)
+        set color sky
+      ]
+    ]
+  ]
+end
+
+to check_rectangle
+end
+
+to doubleClick_rectangle
+  if prev != nobody [
+    ask prev [
+      foreach (list v0 v1 v2 v3) [ v_ ->
+        if v_ != self [
+          ask v_ [die]
+        ]
+      ]
+      die
+    ]
+  ]
 end
