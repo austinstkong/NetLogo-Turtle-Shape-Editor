@@ -3,7 +3,7 @@ breed [polygons polygon]
 to draw_polygon
   ifelse selected = nobody  [
     ; pick the polygon at the patch under your cursor
-    set selected one-of [turtles-here] of patch mouse-xcor mouse-ycor
+    set selected one-of [polygons-here] of patch mouse-xcor mouse-ycor
     if not any? polygons or (selected = nobody and prev != nobody and [count my-links < 2] of prev) [
       ask patch mouse-xcor mouse-ycor [
         sprout-polygons 1 [
@@ -41,7 +41,7 @@ to draw_polygon
   ] [
     ; if a turtle is selected, move it to the mouse, if no one else is here
     ask selected [
-      let existing [one-of turtles-here] of patch mouse-xcor mouse-ycor
+      let existing [one-of polygons-here] of patch mouse-xcor mouse-ycor
       (ifelse existing = nobody [
         move-to patch mouse-xcor mouse-ycor
         set label (word who ": " xcor " " ycor)

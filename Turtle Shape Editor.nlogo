@@ -92,6 +92,9 @@ to go
     ]
     reset-perspective
   ]
+  ask rectangles [
+    set label (word who ":"xcor ","ycor ":" v0 v1 v2 v3)
+  ]
   display ; update the display as not using ticks
 end
 @#$#@#$#@
@@ -317,8 +320,8 @@ CHOOSER
 170
 elementType
 elementType
-"Polygon" "Line" "Rectangle" "Circle"
-0
+"Line" "Rectangle" "Circle" "Polygon"
+1
 
 BUTTON
 950
@@ -343,7 +346,7 @@ INPUTBOX
 1775
 415
 element_string
-Polygon -2 true true 21 26 10 24 10 14 26 21 21 26
+Polygon -2 true true 13 26 6 19 20 14 13 26
 1
 0
 String
