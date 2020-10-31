@@ -40,16 +40,8 @@ to draw_rectangle
   ] [
     ; if a turtle is selected, move it to the mouse, if no one else is there
     ask selected [
-      if canMoveRectangle? [
-        ask link-neighbors [
-          if xcor = [xcor] of myself [
-            set xcor round mouse-xcor
-          ]
-          if ycor = [ycor] of myself [
-            set ycor round mouse-ycor
-          ]
-        ]
-        move-to patch mouse-xcor mouse-ycor
+      if can_adjust_rectangle? mouse-xcor mouse-ycor [
+        adjust_rectangle mouse-xcor mouse-ycor
         set label (word who ": " xcor " " ycor)
         set color sky
       ]
@@ -114,18 +106,52 @@ to create_rectangle_rest [v0_]
   ]
 end
 
-to-report canMoveRectangle?
-  if [any? rectangles-here] of patch mouse-xcor mouse-ycor [report false]
+to-report can_adjust_rectangle? [xc yc]
+  if [any? rectangles-here] of patch xc yc [report false]
   let flag true
   ask link-neighbors [
     if xcor = [xcor] of myself [
-      if any? [rectangles-here] of patch mouse-xcor ycor [set flag false]
+      if any? [rectangles-here] of patch xc ycor [set flag false]
     ]
     if ycor = [ycor] of myself [
-      if any? [rectangles-here] of patch xcor mouse-ycor [set flag false]
+      if any? [rectangles-here] of patch xcor yc [set flag false]
     ]
   ]
   report flag
+end
+
+to adjust_rectangle [xc yc]
+  ask link-neighbors [
+    if xcor = [xcor] of myself [
+      set xcor round xc
+    ]
+    if ycor = [ycor] of myself [
+      set ycor round yc
+    ]
+  ]
+  move-to patch xc yc
+end
+
+to-report can_move_rectangle? [selected_ xc yc]
+  let flag true
+  ask selected_ [
+    let delx xcor - (nxc xc)
+    let dely ycor - (nyc yc)
+    ask (turtle-set v0 v1 v2 v3) [
+      if not is-patch? patch (xcor - delx) (ycor - dely) [
+        set flag false
+      ]
+    ]
+  ]
+  report flag
+end
+
+to move_rectangle [xc yc]
+  let delx xcor - xc
+  let dely ycor - yc
+  ask (turtle-set v0 v1 v2 v3) [
+    setxy (xcor - delx) (ycor - dely)
+  ]
 end
 
 to check_rectangle

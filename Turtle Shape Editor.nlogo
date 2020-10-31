@@ -331,7 +331,7 @@ HORIZONTAL
 CHOOSER
 950
 125
-1088
+1085
 170
 elementType
 elementType
@@ -361,7 +361,7 @@ INPUTBOX
 1775
 415
 element_string
-Rectangle -2 true false 12 11 21 4
+Rectangle -7500403 true false 13 19 18 16
 1
 0
 String
@@ -380,11 +380,11 @@ filled?
 CHOOSER
 950
 170
-1087
+1085
 215
 color_as_int
 color_as_int
--7500403 -2674135 -955883 -6459832 -1184463 -7500403 -6459832 -14835848 -11221820 -13791810 -13345367 -8630108 -5825686 -2064490 -16777216 -1
+-7500403 -2674135 -955883 -6459832 -1184463 -10899396 -6459832 -14835848 -11221820 -13791810 -13345367 -8630108 -5825686 -2064490 -16777216 -1
 0
 
 BUTTON
@@ -405,12 +405,12 @@ NIL
 1
 
 INPUTBOX
-1095
+1225
 155
-1160
+1290
 215
 col
-5.0
+15.0
 1
 0
 Color
@@ -466,10 +466,10 @@ current-state
 11
 
 MONITOR
-1165
-165
-1295
-210
+1290
+170
+1375
+215
 color as int
 table:get color_table col
 17
@@ -477,23 +477,34 @@ table:get color_table col
 11
 
 MONITOR
-1295
-165
-1472
-210
-color index (transparency)
+1375
+170
+1440
+215
+color index
 position col (table:keys color_table) - ifelse-value col < 0 [16][0]
 17
 1
 11
 
 MONITOR
-1165
+1085
+170
+1160
 215
-1247
-260
 netlogo color
 table:get color_table color_as_int
+17
+1
+11
+
+MONITOR
+1160
+170
+1225
+215
+color index
+position (table:get color_table color_as_int) (table:keys color_table) - ifelse-value (table:get color_table color_as_int) < 0 [16][0]
 17
 1
 11

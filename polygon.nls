@@ -108,6 +108,13 @@ to-report string_polygon [vertices]
   report (word "Polygon " color_as_int " " filled? " " marked? " " but-first but-last (word vertices))
 end
 
+to-report can_move_polygon? [selected_ xc yc]
+  if all? selected_ [is-patch? patch (nxc xc) (nyc yc)] [
+    report not any? selected_ with [[any? polygons-here] of patch nxc xc nyc yc]
+  ]
+  report false
+end
+
 to doubleClick_polygon
   if prev != nobody [
     let tmp nobody

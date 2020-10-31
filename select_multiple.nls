@@ -117,9 +117,19 @@ to handle-drag
     ]
     let xc [xt] of min-one-of sides [xt]
     let yc [yt] of min-one-of sides [yt]
-    if canMoveSelected selected xc yc [
-      ask selected [
-        setxy nxc xc nyc yc
+    
+    
+    ifelse [breed = rectangles] of one-of selected [
+      if can_move_rectangle? selected xc yc [
+        ask selected [
+          move_rectangle (nxc xc) (nyc yc)
+        ]
+      ]
+    ] [
+      if can_move_polygon? selected xc yc [
+        ask selected [
+          setxy (nxc xc) (nyc yc)
+        ]
       ]
     ]
     ; update the drag coordinates for the next time through
@@ -134,13 +144,7 @@ to handle-drag
   ]
 end
 
-to-report canMoveSelected [selected_ xc yc]
-  if all? selected_ [is-patch? patch nxc xc nyc yc] [
-    report not any? selected_ with [[any? turtles-here with [breed != sides]] of patch nxc xc nyc yc]
-  ]
-  report false
-end
-
+; Get new coordinates after shift
 to-report nxc [xc]
   report (xc - item 0 (table:get selected_delta who))
 end
