@@ -111,8 +111,8 @@ to handle-drag
       ifelse is-patch? patch xt yt [
         setxy xt yt
       ] [ ; if it is outside the world, then keep it bounded
-        set xcor max list min-pxcor min list max-pxcor xt
-        set xcor max list min-pycor min list max-pycor yt
+        set xcor max list (min-pxcor - 0.49) min list (max-pxcor + 0.49) xt
+        set ycor max list (min-pycor - 0.49) min list (max-pycor + 0.49) yt
       ]
     ]
     let xc [xt] of min-one-of sides [xt]
