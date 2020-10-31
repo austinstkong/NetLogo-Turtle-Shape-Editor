@@ -1,5 +1,38 @@
 ; https://github.com/NetLogo/NetLogo/tree/hexy/netlogo-core/src/main/shape
 ; Refer to the toString method of each element class
+
+globals [color_table]
+
+to init_color_table
+  let lookup [
+    [gray -7500403]
+    [red -2674135]
+    [orange -955883]
+    [brown -6459832]
+    [yellow -1184463]
+    [green -10899396]
+    [lime -6459832]
+    [turquoise -14835848]
+    [cyan -11221820]
+    [sky -13791810]
+    [blue -13345367]
+    [violet -8630108]
+    [magenta -5825686]
+    [pink -2064490]
+    [black -16777216]
+    [white -1]
+  ]
+  set color_table table:make
+  
+  ; Seperate for order reasons
+  foreach lookup [cl ->
+    table:put color_table item 0 cl item 1 cl
+  ]
+  foreach lookup [cl ->
+    table:put color_table item 1 cl item 0 cl
+  ]
+end
+
 to parse_element [str]
   set str (csv:from-row str " ")
   let elementType_ first str
