@@ -59,6 +59,7 @@ to parse_element [str]
             user-message word "Rectangle: Expected [xleft ytop xright ybottom] but got: " str
             stop
           ]
+          create_rectangle (item 0 str) (item 1 str) (item 2 str) (item 3 str)
         ] elementType_ = "Circle" [
           ;"Circle " + awtColor.getRGB + " " + filled + " " + marked + " " + x + " " + y + " " + xDiameter
           if length str != 3 [
@@ -70,7 +71,6 @@ to parse_element [str]
           stop
       ])
   ])
-  output-print str
 end
 
 ; https://github.com/NetLogo/NetLogo/blob/hexy/netlogo-core/src/main/shape/VectorShape.scala

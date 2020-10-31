@@ -105,7 +105,7 @@ to-report export_polygon
 end
 
 to-report string_polygon [vertices]
-  report (word "Polygon " color_as_int " " filled? " true " but-first but-last (word vertices))
+  report (word "Polygon " color_as_int " " filled? " " marked? " " but-first but-last (word vertices))
 end
 
 to doubleClick_polygon
