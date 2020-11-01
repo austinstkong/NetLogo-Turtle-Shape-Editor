@@ -165,10 +165,6 @@ to check_rectangle
   ]
 end
 
-to-report string_rectangle [xleft ytop xright ybottom]
-  report (word "Rectangle " color_as_int " " filled? " " marked? " " xleft " " ytop " " xright " " ybottom)
-end
-
 to doubleClick_rectangle
   if prev != nobody [
     ask prev [
@@ -181,3 +177,16 @@ to doubleClick_rectangle
     ]
   ]
 end
+
+; Export all
+to-report export_rectangle
+  if any? rectangles [
+    report "";string_rectange (check_ring (one-of polygons) no-turtles)
+  ]
+  report ""
+end
+
+to-report string_rectangle [xleft ytop xright ybottom]
+  report (word "Rectangle " color_as_int " " filled? " " marked? " " xleft " " ytop " " xright " " ybottom)
+end
+

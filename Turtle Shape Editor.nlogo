@@ -341,9 +341,9 @@ elementType
 BUTTON
 950
 320
-1055
+1067
 353
-Export Element
+Export Elements
 set element_string runresult word \"export_\" elementType
 NIL
 1
@@ -361,7 +361,7 @@ INPUTBOX
 1775
 415
 element_string
-Rectangle -7500403 true false 13 19 18 16
+NIL
 1
 0
 String
@@ -390,7 +390,7 @@ color_as_int
 BUTTON
 950
 285
-1055
+1065
 318
 Draw Element
 parse_element element_string

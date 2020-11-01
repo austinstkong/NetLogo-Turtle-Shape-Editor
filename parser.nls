@@ -34,6 +34,10 @@ to init_color_table
 end
 
 to parse_element [str]
+  if str = "" [
+    user-message "Got and empty string."
+    stop
+  ]
   set str (csv:from-row str " ")
   let elementType_ first str
   carefully [
